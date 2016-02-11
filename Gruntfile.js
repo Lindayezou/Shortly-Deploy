@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     concat: {
       build: {
         src: ['public/client/**/*.js'],
-        dest: 'public/dist/clientFiles.min.js'
+        dest: 'public/dist/condensedFiles.min.js'
       }
     },
 
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         },
         src: ['test/**/*.js']
       }
-    },
+    }, 
 
     nodemon: {
       dev: {
@@ -26,8 +26,8 @@ module.exports = function(grunt) {
 
     uglify: {
       build: {
-        src: ['public/dist/clientFiles.min.js'],
-        dest: 'public/dist/builtFiles.min.js'
+        src: ['public/dist/condensedFiles.min.js'],
+        dest: 'public/dist/app.min.js'
       }
     },
 
@@ -88,6 +88,35 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-git');
 
+  ////////////////////////////////////////////////////
+  // Main grunt tasks for remote - prod
+  ////////////////////////////////////////////////////
+
+  grunt.registerTask('upload', function(n) {
+    if (grunt.option('prod')) { // grunt upload --prod or grunt upload --prod=blah
+      // add your production server task here
+      grunt.task.run([ 'start-prod' ]);
+    } else {
+      grunt.task.run([ 'server-dev' ]);
+    }
+  });
+
+
+  grunt.registerTask('start-prod', [
+    'build', 'nodemon'
+  ]);
+ 
+  grunt.registerTask('build', [
+    'concat', 'uglify'
+  ]);
+
+
+  ////////////////////////////////////////////////////
+  // Main grunt tasks for local testing purposes - dev
+  ////////////////////////////////////////////////////
+
+  // runs a watch that will re-run concat & uglify every time a file changes
+  // insde of 'public/client/**/*.js' & 'public/lib/**/*.js',
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
     var nodemon = grunt.util.spawn({
@@ -101,34 +130,21 @@ module.exports = function(grunt) {
     grunt.task.run([ 'watch' ]);
   });
 
-  ////////////////////////////////////////////////////
-  // Main grunt tasks
-  ////////////////////////////////////////////////////
   grunt.registerTask('start', [
     'nodemon'
   ]);
 
+  // this runs all our tests and starts the server
+  // assumption: we do not need the server to be running in order to execute the tests
   grunt.registerTask('test', [
-    'start', 'eslint', 'mochaTest'
-    // build
+    'eslint', 'mochaTest', 'start'
   ]);
-
-  grunt.registerTask('build', [
-    'gitpush'
-  ]);
-
-  grunt.registerTask('upload', function(n) {
-    if (grunt.option('prod')) {
-      // add your production server task here
-    } else {
-      grunt.task.run([ 'server-dev' ]);
-    }
-  });
-
-  // grunt deploy has to be called on the remote server after grunt build
+ 
   grunt.registerTask('deploy', [
-    'concat', 'uglify'
-    // add your deploy tasks here
+    // this will push code to remote server (prod)
+    'gitpush'
+    // somehow trigger grunt test to run on remote server
   ]);
+
 
 };
