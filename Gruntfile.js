@@ -16,7 +16,12 @@ module.exports = function(grunt) {
 
     nodemon: {
       dev: {
-        script: 'server.js'
+        script: 'server.js',
+        options: {
+          env: {
+            PORT: '8181'
+          }
+        }
       }
     },
 
@@ -49,6 +54,15 @@ module.exports = function(grunt) {
       }
     },
 
+    gitpush: {
+      your_target: {
+        options: {
+          remote: 'live',
+          branch: 'master'
+        }
+      }
+    },
+
     shell: {
       prodServer: {
       }
@@ -63,6 +77,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
+  grunt.loadNpmTasks('grunt-git');
 
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
@@ -105,8 +120,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('deploy', [
+    'nodemon', 'gitpush'
     // add your deploy tasks here
   ]);
+
 
 
 };
