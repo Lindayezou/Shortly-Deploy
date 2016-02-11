@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 
     eslint: {
       target: [
-        // Add list of files to lint here
+        'public/client/**/*.js', 'app/**/*.js', 'views/**/*.ejs'
       ]
     },
 
@@ -73,7 +73,9 @@ module.exports = function(grunt) {
     shell: {
       prodServer: {
       }
-    },
+    }
+
+    // script to change the css and js asset files to point to minified version
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -107,9 +109,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', [
-    // start
-    // eslint
-    'mochaTest'
+    'start', 'eslint', 'mochaTest'
     // build
   ]);
 
