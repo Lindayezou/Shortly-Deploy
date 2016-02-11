@@ -3,6 +3,10 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      build: {
+        src: ['public/client/**/*.js'],
+        dest: 'public/dist/clientFiles.min.js'
+      }
     },
 
     mochaTest: {
@@ -16,16 +20,15 @@ module.exports = function(grunt) {
 
     nodemon: {
       dev: {
-        script: 'server.js',
-        options: {
-          env: {
-            PORT: '8181'
-          }
-        }
+        script: 'server.js'
       }
     },
 
     uglify: {
+      build: {
+        src: ['public/dist/clientFiles.min.js'],
+        dest: 'public/dist/builtFiles.min.js'
+      }
     },
 
     eslint: {
@@ -35,6 +38,10 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      build: {
+        src: 'public/style.css',
+        dest: 'public/dist/css.min.css'
+      }
     },
 
     watch: {
@@ -92,23 +99,22 @@ module.exports = function(grunt) {
     grunt.task.run([ 'watch' ]);
   });
 
-
-  grunt.registerTask('upload', function(n) {
-    if (grunt.option('prod')) {
-      // add your production server task here
-    }
-    grunt.task.run([ 'server-dev' ]);
-  });
-
   ////////////////////////////////////////////////////
   // Main grunt tasks
   ////////////////////////////////////////////////////
+  grunt.registerTask('start', [
+    'nodemon'
+  ]);
 
   grunt.registerTask('test', [
+    // start
+    // eslint
     'mochaTest'
+    // build
   ]);
 
   grunt.registerTask('build', [
+    'gitpush'
   ]);
 
   grunt.registerTask('upload', function(n) {
@@ -119,11 +125,10 @@ module.exports = function(grunt) {
     }
   });
 
+  // grunt deploy has to be called on the remote server after grunt build
   grunt.registerTask('deploy', [
-    'nodemon', 'gitpush'
+    'concat', 'uglify'
     // add your deploy tasks here
   ]);
-
-
 
 };
