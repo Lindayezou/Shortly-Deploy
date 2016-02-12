@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
-var db = mongoose.createConnection('mongodb://localhost/shortly');
 
+mongoose.connect('mongodb://localhost/shortlydb');
 
+var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
 db.once('open', function() {
-
-  mongoose.connection.close();
+  console.log("MongoDB connection is open!");
 });
 
 module.exports = db;

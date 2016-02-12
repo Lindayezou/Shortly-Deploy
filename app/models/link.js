@@ -12,7 +12,7 @@ var urlSchema = new Schema({
   visits: Number,
 });
 
-var Link = mongoose.model('Link', urlSchema);
+var Link = mongoose.model('urls', urlSchema);
 
 urlSchema.pre('save', function(next) {
   var shasum = crypto.createHash('sha1');
